@@ -69,6 +69,7 @@ BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_FOLDER, &CDocsSearcherDlg::OnBnClickedBtnFolder)
+	ON_BN_CLICKED(IDC_BTN_KEYWORD, &CDocsSearcherDlg::OnBnClickedBtnKeyword)
 END_MESSAGE_MAP()
 
 
@@ -181,4 +182,34 @@ void CDocsSearcherDlg::OnBnClickedBtnFolder()
 		// 3. 에디트 컨트롤에 표시
 		folder_edit_.SetWindowTextW(folder_path);
 	}
+}
+
+
+// ---------------------------------------
+// CDocsSearcherDlg::OnBnClickedBtnKeyword
+// ---------------------------------------
+// 1) 버튼 클릭시 폴더 경로, 키워드 읽기
+// 2) 폴더 경로의 하위 파일 탐색
+// 3) 적합한 파일을 읽어 키워드 검색
+// 4) 적합한 결과 저장
+// 5) 결과를 리스트 컨트롤에 표시
+//
+void CDocsSearcherDlg::OnBnClickedBtnKeyword()
+{
+	CString folder_path, target_keyword;
+
+	// 1. 경로, 키워드 읽기
+	folder_edit_.GetWindowText(folder_path);
+	keyword_edit_.GetWindowText(target_keyword);
+
+	if (folder_path.IsEmpty() || target_keyword.IsEmpty())
+	{
+		AfxMessageBox(_T("폴더 또는 검색어가 지정되지 않았습니다."));
+		return;
+	}
+
+	// Debug code
+	CString msg;
+	msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
+	AfxMessageBox(msg, MB_ICONINFORMATION);
 }

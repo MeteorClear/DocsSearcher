@@ -41,4 +41,5 @@ public:
 	// 결과 목록 제어 변수
 	CListCtrl result_list_;
 	afx_msg void OnBnClickedBtnFolder();
+	afx_msg void OnBnClickedBtnKeyword();
 };
