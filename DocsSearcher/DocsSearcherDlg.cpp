@@ -162,7 +162,7 @@ HCURSOR CDocsSearcherDlg::OnQueryDragIcon()
 // --------------------------------------
 // CDocsSearcherDlg::OnBnClickedBtnFolder
 // --------------------------------------
-// 1) 버튼 클릭시 폴더 선택 다이얼로그 표시
+// 1) 버튼 클릭시, 폴더 선택 다이얼로그 생성
 // 2) 폴더 선택시 경로 저장
 // 3) 에딧 컨트롤에 경로 출력
 void CDocsSearcherDlg::OnBnClickedBtnFolder()
@@ -175,9 +175,10 @@ void CDocsSearcherDlg::OnBnClickedBtnFolder()
 		0
 	);
 
-	// 2. 다이얼로그 실행
+	// 2. 다이얼로그 확인시
 	if (dlg.DoModal() == IDOK) {
-		CString folder_path = dlg.GetPathName();  // 선택한 폴더 절대경로
+		// 선택한 폴더 절대경로 저장
+		CString folder_path = dlg.GetPathName();
 
 		// 3. 에디트 컨트롤에 표시
 		folder_edit_.SetWindowTextW(folder_path);
@@ -188,7 +189,7 @@ void CDocsSearcherDlg::OnBnClickedBtnFolder()
 // ---------------------------------------
 // CDocsSearcherDlg::OnBnClickedBtnKeyword
 // ---------------------------------------
-// 1) 버튼 클릭시 폴더 경로, 키워드 읽기
+// 1) 버튼 클릭시, 폴더 경로, 키워드 읽기
 // 2) 폴더 경로의 하위 파일 탐색
 // 3) 적합한 파일을 읽어 키워드 검색
 // 4) 적합한 결과 저장
