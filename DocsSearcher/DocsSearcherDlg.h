@@ -34,4 +34,10 @@ protected:
 public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnLvnItemchangedListResult(NMHDR* pNMHDR, LRESULT* pResult);
+	// 폴더 선택 제어 변수
+	CEdit folder_edit_;
+	// 키워드 검색 제어 변수
+	CEdit keyword_edit_;
+	// 결과 목록 제어 변수
+	CListCtrl result_list_;
 };

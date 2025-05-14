@@ -59,6 +59,9 @@ CDocsSearcherDlg::CDocsSearcherDlg(CWnd* pParent /*=nullptr*/)
 void CDocsSearcherDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT_FOLDER, folder_edit_);
+	DDX_Control(pDX, IDC_EDIT_KEYWORD, keyword_edit_);
+	DDX_Control(pDX, IDC_LIST_RESULT, result_list_);
 }
 
 BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
