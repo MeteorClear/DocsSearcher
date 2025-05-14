@@ -104,6 +104,17 @@ BOOL CDocsSearcherDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
+	// 리스트 컨트롤: 전체 행 선택 + 그리드
+	result_list_.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+	// "파일명 | 경로 | 문맥" 컬럼 추가
+	constexpr int kColWidthName = 100;
+	constexpr int kColWidthPath = 300;
+	constexpr int kColWidthCtx = 300;
+	result_list_.InsertColumn(0, _T("파일명"), LVCFMT_LEFT, kColWidthName);
+	result_list_.InsertColumn(1, _T("파일 경로"), LVCFMT_LEFT, kColWidthPath);
+	result_list_.InsertColumn(2, _T("검색어 주변 내용"), LVCFMT_LEFT, kColWidthCtx);
+
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -210,8 +221,13 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 		return;
 	}
 
+	// 리스트 초기화
+	result_list_.DeleteAllItems();
+
 	// Debug code
-	CString msg;
-	msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
-	AfxMessageBox(msg, MB_ICONINFORMATION);
+	{
+		CString msg;
+		msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
+		AfxMessageBox(msg, MB_ICONINFORMATION);
+	}
 }
