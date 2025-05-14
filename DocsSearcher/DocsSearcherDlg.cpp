@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BTN_FOLDER, &CDocsSearcherDlg::OnBnClickedBtnFolder)
 END_MESSAGE_MAP()
 
 
@@ -156,3 +157,28 @@ HCURSOR CDocsSearcherDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+// --------------------------------------
+// CDocsSearcherDlg::OnBnClickedBtnFolder
+// --------------------------------------
+// 1) 버튼 클릭시 폴더 선택 다이얼로그 표시
+// 2) 폴더 선택시 경로 저장
+// 3) 에딧 컨트롤에 경로 출력
+void CDocsSearcherDlg::OnBnClickedBtnFolder()
+{
+	// 1. 다이얼로그 생성
+	CFolderPickerDialog dlg(
+		nullptr,  // pszPath: 기본 경로
+		OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST,  // dwFlags: 존재하는경로만 | 올바른경로만
+		this,
+		0
+	);
+
+	// 2. 다이얼로그 실행
+	if (dlg.DoModal() == IDOK) {
+		CString folder_path = dlg.GetPathName();  // 선택한 폴더 절대경로
+
+		// 3. 에디트 컨트롤에 표시
+		folder_edit_.SetWindowTextW(folder_path);
+	}
+}
