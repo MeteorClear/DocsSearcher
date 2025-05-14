@@ -11,7 +11,6 @@
 #define IDC_EDIT_KEYWORD                1001
 #define IDC_BTN_FOLDER                  1002
 #define IDC_BTN_KEYWORD                 1003
-#define IDC_LIST1                       1004
 #define IDC_LIST_RESULT                 1004
 
 // Next default values for new objects
