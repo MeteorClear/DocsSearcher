@@ -176,7 +176,8 @@ void CDocsSearcherDlg::OnBnClickedBtnFolder()
 	);
 
 	// 2. 다이얼로그 확인시
-	if (dlg.DoModal() == IDOK) {
+	if (dlg.DoModal() == IDOK) 
+	{
 		// 선택한 폴더 절대경로 저장
 		CString folder_path = dlg.GetPathName();
 
