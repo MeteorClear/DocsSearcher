@@ -206,7 +206,6 @@ void CDocsSearcherDlg::OnBnClickedBtnFolder()
 // 3) 적합한 파일을 읽어 키워드 검색
 // 4) 적합한 결과 저장
 // 5) 결과를 리스트 컨트롤에 표시
-//
 void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 {
 	CString folder_path, target_keyword;
@@ -221,13 +220,53 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 		return;
 	}
 
-	// 리스트 초기화
-	result_list_.DeleteAllItems();
-
 	// Debug code
 	{
 		CString msg;
 		msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
 		AfxMessageBox(msg, MB_ICONINFORMATION);
+	}
+
+	// 리스트 초기화
+	result_list_.DeleteAllItems();
+
+	// 폴더 탐색
+	SearchFolder(folder_path, target_keyword);
+	
+}
+
+
+// ------------------------------
+// CDocsSearcherDlg::SearchFolder
+// ------------------------------
+// 1) 경로의 폴더를 순차적으로 확인
+// 2) 하위 폴더인 경우 재귀적으로 탐색
+// 3) 목표 파일 확장자만 필터링
+// 4) 파일 내용에 키워드가 있는지 검사
+// 5) 결과를 리스트 컨트롤에 표시
+void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& target_keyword)
+{
+	CFileFind finder;
+	CString search_spec = folder_path + _T("\\*.*");
+	BOOL is_working = finder.FindFile(search_spec);
+
+	while (is_working) 
+	{
+		is_working = finder.FindNextFile();
+
+		// '.', ".." 무시
+		if (finder.IsDots()) continue;
+
+		// 폴더인 경우 재귀
+		if (finder.IsDirectory())
+		{
+			SearchFolder(finder.GetFilePath(), target_keyword);
+			continue;
+		}
+		
+
+		// 확장자 필터링 기능
+
+		// 파일 내용 검사 기능
 	}
 }
