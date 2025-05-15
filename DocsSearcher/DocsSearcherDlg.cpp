@@ -228,7 +228,6 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 		CString msg;
 		msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
 		AfxMessageBox(msg, MB_ICONINFORMATION);
-		AddResultToList(_T("test"), folder_path, target_keyword);
 	}
 
 	// 폴더 탐색
@@ -265,10 +264,20 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 			continue;
 		}
 		
-
-		// 확장자 필터링 기능
+		// 확장자 필터링 (txt, ... 추가)
+		CString ext = finder.GetFilePath();
+		ext = ext.Right(ext.GetLength() - ext.ReverseFind('.') - 1).MakeLower();
+		const std::vector<CString> kAllowed = {  // 필터링할 확장자
+			_T("txt"),
+		};
+		if (std::find(kAllowed.begin(), kAllowed.end(), ext) == kAllowed.end()) continue;
 
 		// 파일 내용 검사 기능
+
+		// Debug code
+		{
+			AddResultToList(finder.GetFileName(), finder.GetFilePath(), _T("test"));
+		}
 	}
 }
 
