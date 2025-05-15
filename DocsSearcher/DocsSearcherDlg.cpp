@@ -270,3 +270,9 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 		// 파일 내용 검사 기능
 	}
 }
+
+
+void CDocsSearcherDlg::AddResultToList(const CString& file_name, const CString& file_path, const CString& context)
+{
+
+}
