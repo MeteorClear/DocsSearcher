@@ -220,15 +220,16 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 		return;
 	}
 
+	// 리스트 초기화
+	result_list_.DeleteAllItems();
+
 	// Debug code
 	{
 		CString msg;
 		msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
 		AfxMessageBox(msg, MB_ICONINFORMATION);
+		AddResultToList(_T("test"), folder_path, target_keyword);
 	}
-
-	// 리스트 초기화
-	result_list_.DeleteAllItems();
 
 	// 폴더 탐색
 	SearchFolder(folder_path, target_keyword);
@@ -272,7 +273,13 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 }
 
 
+// ---------------------------------
+// CDocsSearcherDlg::AddResultToList
+// ---------------------------------
+// 1) 전달받은 데이터를 리스트 컨트롤에 표시
 void CDocsSearcherDlg::AddResultToList(const CString& file_name, const CString& file_path, const CString& context)
 {
-
+	int idx = result_list_.InsertItem(result_list_.GetItemCount(), file_name);
+	result_list_.SetItemText(idx, 1, file_path);
+	result_list_.SetItemText(idx, 2, context);
 }
