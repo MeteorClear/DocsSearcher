@@ -292,3 +292,15 @@ void CDocsSearcherDlg::AddResultToList(const CString& file_name, const CString& 
 	result_list_.SetItemText(idx, 1, file_path);
 	result_list_.SetItemText(idx, 2, context);
 }
+
+
+// --------------------------------------
+// CDocsSearcherDlg::SearchKeywordHandler
+// --------------------------------------
+// 1) 확장자에 적합한 파일 읽기 메서드 호출
+void CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context)
+{
+	if (ext == _T("txt")) {
+		// txt 파일인 경우 호출
+	}
+}
