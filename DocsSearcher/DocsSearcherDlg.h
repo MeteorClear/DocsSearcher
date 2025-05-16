@@ -46,4 +46,5 @@ public:
 private:
 	void SearchFolder(const CString& folder_path, const CString& target_keyword);  // 폴더 검색 메서드
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드
+	void SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context); // 파일 확장자별 파일 읽기 메서드 호출 메서드
 };
