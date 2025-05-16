@@ -224,11 +224,13 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 	result_list_.DeleteAllItems();
 
 	// Debug code
+	/*
 	{
 		CString msg;
 		msg.Format(_T("선택한 폴더 경로:\n%s\n선택한 키워드:\n%s"), static_cast<LPCTSTR>(folder_path), static_cast<LPCTSTR>(target_keyword));
 		AfxMessageBox(msg, MB_ICONINFORMATION);
 	}
+	*/
 
 	// 폴더 탐색
 	SearchFolder(folder_path, target_keyword);
@@ -273,10 +275,17 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 		if (std::find(kAllowed.begin(), kAllowed.end(), ext) == kAllowed.end()) continue;
 
 		// 파일 내용 검사 기능
+		bool is_found;
+		CString context;
+		is_found = SearchKeywordHandler(ext, finder.GetFilePath(), target_keyword, context);
+
+		if (is_found) AddResultToList(finder.GetFileName(), finder.GetFilePath(), context);
 
 		// Debug code
 		{
-			AddResultToList(finder.GetFileName(), finder.GetFilePath(), _T("test"));
+			CString testx = _T("no");
+			if (is_found) testx = _T("yes");
+			AddResultToList(finder.GetFileName(), finder.GetFilePath(), testx);
 		}
 	}
 }
@@ -298,9 +307,63 @@ void CDocsSearcherDlg::AddResultToList(const CString& file_name, const CString& 
 // CDocsSearcherDlg::SearchKeywordHandler
 // --------------------------------------
 // 1) 확장자에 적합한 파일 읽기 메서드 호출
-void CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context)
+bool CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context)
 {
+	bool is_found = false;
 	if (ext == _T("txt")) {
 		// txt 파일인 경우 호출
+		is_found = SearchKeywordInTXT(file_path, keyword, context);
 	}
+	return is_found;
+}
+
+
+// ------------------------------------
+// CDocsSearcherDlg::SearchKeywordInTXT
+// ------------------------------------
+// 1) 파일 읽기
+// 2) 파일 내용에서 키워드 찾기
+// 3) 키워드를 발견하면 주변 문맥 저장
+// 4) 발견 여부 반환
+bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString target_keyword, CString& context) 
+{
+	CStdioFile file;
+
+	// 파일 열기 실패
+	if (!file.Open(file_path, CFile::modeRead | CFile::typeBinary | CFile::shareDenyWrite)) return false;
+
+	// 1. 파일 읽기
+	CString buffer, line;
+	while (file.ReadString(line)) 
+	{
+		buffer += line;
+		buffer += _T('\n');
+	}
+	file.Close();
+
+	// 2. 키워드 검색
+	CString keyword = target_keyword;
+	keyword.Trim();
+	keyword.MakeLower();
+
+	int position = buffer.MakeLower().Find(keyword);
+
+	// 미발견
+	if (position == -1) {
+		{
+			CString msg = _T("미발견");
+			AfxMessageBox(msg, MB_ICONINFORMATION);
+		}
+		return false;
+	}
+
+	// 3. 주변 문맥 추출
+	int start = max(0, position - 20);
+	int end = min(buffer.GetLength(), position + keyword.GetLength() + 20);
+	context = buffer.Mid(start, end - start);
+
+	if (start > 0) context.Insert(0, _T("..."));
+	if (end < buffer.GetLength()) context += _T("...");
+
+	return true;
 }
