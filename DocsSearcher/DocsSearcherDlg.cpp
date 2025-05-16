@@ -330,7 +330,7 @@ bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString targ
 	CStdioFile file;
 
 	// 파일 열기 실패
-	if (!file.Open(file_path, CFile::modeRead | CFile::typeBinary | CFile::shareDenyWrite)) return false;
+	if (!file.Open(file_path, CFile::modeRead | CFile::typeText | CFile::shareDenyWrite)) return false;
 
 	// 1. 파일 읽기
 	CString buffer, line;
@@ -346,13 +346,16 @@ bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString targ
 	keyword.Trim();
 	keyword.MakeLower();
 
-	int position = buffer.MakeLower().Find(keyword);
+	CString lower_buf = buffer;
+	lower_buf.MakeLower();
+
+	int position = lower_buf.Find(keyword);
 
 	// 미발견
 	if (position == -1) {
 		{
 			CString msg = _T("미발견");
-			AfxMessageBox(msg, MB_ICONINFORMATION);
+			AfxMessageBox(lower_buf, MB_ICONINFORMATION);
 		}
 		return false;
 	}
