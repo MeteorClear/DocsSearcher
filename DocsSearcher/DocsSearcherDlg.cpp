@@ -7,6 +7,7 @@
 #include "DocsSearcher.h"
 #include "DocsSearcherDlg.h"
 #include "afxdialogex.h"
+#include "EncodingUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -325,21 +326,14 @@ bool CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& f
 // 2) 파일 내용에서 키워드 찾기
 // 3) 키워드를 발견하면 주변 문맥 저장
 // 4) 발견 여부 반환
+
 bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString target_keyword, CString& context) 
 {
-	CStdioFile file;
+	CString buffer;
+	TextEncoding enc;
 
-	// 파일 열기 실패
-	if (!file.Open(file_path, CFile::modeRead | CFile::typeText | CFile::shareDenyWrite)) return false;
-
-	// 1. 파일 읽기
-	CString buffer, line;
-	while (file.ReadString(line)) 
-	{
-		buffer += line;
-		buffer += _T('\n');
-	}
-	file.Close();
+	// 파일 읽기
+	if (!LoadTextFile(file_path, buffer, enc)) return false;
 
 	// 2. 키워드 검색
 	CString keyword = target_keyword;
