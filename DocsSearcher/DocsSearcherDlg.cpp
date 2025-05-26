@@ -44,6 +44,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RESULT, &CDocsSearcherDlg::OnNMDblclkResultList)
 END_MESSAGE_MAP()
 
 
@@ -363,4 +364,11 @@ bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString targ
 	if (end < buffer.GetLength()) context += _T("...");
 
 	return true;
+}
+
+
+void CDocsSearcherDlg::OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMITEMACTIVATE pItem = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	*pResult = 0;
 }
