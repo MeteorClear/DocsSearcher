@@ -44,7 +44,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RESULT, &CDocsSearcherDlg::OnNMDblclkResultList)
 END_MESSAGE_MAP()
 
 
@@ -72,6 +71,7 @@ BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_FOLDER, &CDocsSearcherDlg::OnBnClickedBtnFolder)
 	ON_BN_CLICKED(IDC_BTN_KEYWORD, &CDocsSearcherDlg::OnBnClickedBtnKeyword)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RESULT, &CDocsSearcherDlg::OnNMDblclkResultList)
 END_MESSAGE_MAP()
 
 
@@ -327,7 +327,6 @@ bool CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& f
 // 2) 파일 내용에서 키워드 찾기
 // 3) 키워드를 발견하면 주변 문맥 저장
 // 4) 발견 여부 반환
-
 bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString target_keyword, CString& context) 
 {
 	CString buffer;
@@ -367,8 +366,47 @@ bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString targ
 }
 
 
+// ------------------------------------
+// CDocsSearcherDlg::OnNMDblclkResultList
+// ------------------------------------
+// 1) 리스트 컨트롤 더블 클릭시 호출
+// 2) 리스트 컨트롤에서 파일경로 추출
+// 3) 윈도우 쉘로 파일 경로의 파일 오픈
 void CDocsSearcherDlg::OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LPNMITEMACTIVATE pItem = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
+	int row = pItem->iItem;
+
+	{
+		CString msg = _T("호출 테스트");
+		AfxMessageBox(msg, MB_ICONINFORMATION);
+	}
+	
+	// 빈공간의 경우
+	if (row < 0) return;
+
+	// 파일 경로 추출 (파일명 | 파일경로 | 문맥)
+	CString file_path = result_list_.GetItemText(row, 1);
+
+	// 경로가 빈 경우
+	if (file_path.IsEmpty()) return;
+
+	// 쉘로 파일 오픈
+	HINSTANCE hInst = ::ShellExecute(
+		nullptr,			// HWND
+		_T("open"),			// lpOperation
+		file_path,			// lpFile
+		nullptr,			// lpParameters
+		nullptr,			// lpDirectory
+		SW_SHOWNORMAL		// nShowCmd
+	);
+
+	// 호출 실패(오류코드 0~32)
+	if (reinterpret_cast<INT_PTR>(hInst) <= 32) 
+	{
+		CString msg;
+		msg.Format(_T("파일을 열 수 없습니다:\n%s"), static_cast<LPCTSTR>(file_path));
+		AfxMessageBox(msg, MB_ICONERROR);
+	}
 }
