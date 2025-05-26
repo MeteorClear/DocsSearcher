@@ -32,9 +32,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedButton2();
-	afx_msg void OnLvnItemchangedListResult(NMHDR* pNMHDR, LRESULT* pResult);
-	
 	// 제어 변수
 	CEdit folder_edit_;  // 폴더 선택 제어 변수
 	CEdit keyword_edit_;  // 키워드 검색 제어 변수
@@ -43,10 +40,12 @@ public:
 	// 버튼 클릭 메서드
 	afx_msg void OnBnClickedBtnFolder();
 	afx_msg void OnBnClickedBtnKeyword();
+
+	// 리스트 클릭 메서드
+	afx_msg void OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult); // 리스트 컨트롤 항목 더블 클릭시 해당 파일을 여는 메서드
 private:
 	void SearchFolder(const CString& folder_path, const CString& target_keyword);  // 폴더 검색 메서드
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드
 	bool SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context); // 파일 확장자별 파일 읽기 메서드 호출 메서드
 	bool SearchKeywordInTXT(const CString& file_path, CString keyword, CString& context); // txt 확장자 파일 읽고 검색하는 메서드
-	void OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult); // 리스트 컨트롤 항목 더블 클릭시 해당 파일을 여는 메서드
 };
