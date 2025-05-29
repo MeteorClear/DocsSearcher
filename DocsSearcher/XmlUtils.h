@@ -3,10 +3,16 @@
 #ifndef DOCSSEARCHER_XML_UTILS_H_
 #define DOCSSEARCHER_XML_UTILS_H_
 
-namespace docssearcher {
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <codecvt>
+#include <locale>
+#include <memory>
 
-	
+#include <zip.h>			// libzip
+#include <pugixml.hpp>		// pugixml
 
-}  // namespace docssearcher
+std::wstring ExtractDocxText(const std::wstring& filepath);  // .docx 파일에서 데이터 추출 메서드
 
 #endif  // DOCSSEARCHER_XML_UTILS_H_
