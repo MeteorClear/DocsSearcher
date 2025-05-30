@@ -194,3 +194,30 @@ bool SearchKeywordInDocx(const CString& file_path, const CString& keyword, CStri
 
     return true;
 }
+
+
+// -------------------
+// SearchKeywordInHwpx
+// -------------------
+// .hwpx 문서에서 텍스트 추출 후 검색
+bool SearchKeywordInHwpx(const CString& file_path, const CString& keyword, CString& context)
+{
+    // 본문 추출
+    std::wstring w_path(file_path.GetString());
+    std::wstring text = ExtractHwpxText(w_path);
+    if (text.empty()) return false;
+
+    // 검색어 변환
+    std::wstring w_key(keyword.GetString());
+    w_key = ToLower(w_key);
+    std::wstring lower_text = ToLower(text);
+
+    // 검색
+    const size_t pos = lower_text.find(w_key);
+    if (pos == std::wstring::npos) return false;
+
+    // 문맥 추출
+    context = BuildContext(text, pos, w_key.length());
+
+    return true;
+}
