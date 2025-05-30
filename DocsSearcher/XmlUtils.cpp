@@ -26,6 +26,17 @@ namespace
 
 
     // -----------
+    // Utf16ToUtf8
+    // -----------
+    // utf-16 wstring 을 utf-8 string 으로 변환
+    std::string Utf16ToUtf8(const std::wstring& utf16)
+    {
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
+        return conv.to_bytes(utf16);
+    }
+
+
+    // -----------
     // Utf8ToUtf16
     // -----------
     // utf-8 string 을 utf-16 wstring 으로 변환
@@ -74,9 +85,8 @@ namespace
 // .docx(OOXML) 파일에서 word/document.xml 본문에서 텍스트 추출
 std::wstring ExtractDocxText(const std::wstring& filepath) 
 {
-    // libzip은 utf-8 경로만 허용
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
-    const std::string utf8_path = conv.to_bytes(filepath);
+    // libzip는 UTF-8 경로만 허용
+    const std::string utf8_path = Utf16ToUtf8(filepath);
 
     int err = 0;
     std::unique_ptr<zip_t, decltype(&zip_close)> za(zip_open(utf8_path.c_str(), ZIP_RDONLY, &err), &zip_close);
@@ -89,4 +99,43 @@ std::wstring ExtractDocxText(const std::wstring& filepath)
     if (!doc.load_buffer(xml_buf.data(), xml_buf.size(),pugi::parse_default | pugi::parse_ws_pcdata)) return {};
 
     return CollectAllText(doc);   // pugi::xml_document → xml_node 암묵 변환
+}
+
+
+// ---------------
+// ExtractHwpxText
+// ---------------
+// .hwpx 파일에서 section*.xml 본문에서 텍스트 추출
+std::wstring ExtractHwpxText(const std::wstring& filepath) 
+{
+    // libzip는 UTF-8 경로만 허용
+    const std::string utf8_path = Utf16ToUtf8(filepath);
+
+    int err = 0;
+    std::unique_ptr<zip_t, decltype(&zip_close)> za(zip_open(utf8_path.c_str(), ZIP_RDONLY, &err), &zip_close);
+    if (!za) return {};
+
+    std::wstring total;
+    const zip_int64_t entry_count = zip_get_num_entries(za.get(), 0);
+
+    for (zip_uint64_t i = 0; i < entry_count; ++i) 
+    {
+        const char* name = zip_get_name(za.get(), i, 0);
+        if (!name) continue;
+
+        std::string entry(name);
+        const bool is_section = entry.rfind("Contents/section", 0) == 0 && entry.find(".xml") != std::string::npos;
+        if (!is_section) continue;
+
+        const std::string xml_buf = ReadZipEntry(za.get(), entry);
+        if (xml_buf.empty()) continue;
+
+        pugi::xml_document doc;
+        if (doc.load_buffer(xml_buf.data(), xml_buf.size(), pugi::parse_default | pugi::parse_ws_pcdata))
+        {
+            CollectTextRec(doc, total);
+        }
+    }
+
+    return total;
 }
