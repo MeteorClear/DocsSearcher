@@ -9,7 +9,7 @@
 #include <codecvt>
 #include <locale>
 #include <memory>
-
+#include <afx.h>
 #include <zip.h>			// libzip
 #include <pugixml.hpp>		// pugixml
 
