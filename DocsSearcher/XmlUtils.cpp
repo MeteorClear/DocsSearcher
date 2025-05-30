@@ -87,6 +87,22 @@ namespace
         std::transform(src.begin(), src.end(), out.begin(), [&loc](wchar_t ch) { return std::tolower(ch, loc); });
         return out;
     }
+
+
+    // ------------
+    // BuildContext
+    // ------------
+    // 버퍼에서 특정 위치 주변 문맥 추출
+    CString BuildContext(const std::wstring& buffer, size_t hit_pos, size_t hit_len, size_t span = 20) {
+        const size_t total_len = buffer.length();
+        const size_t start = (hit_pos > span) ? hit_pos - span : 0;
+        const size_t end = min(total_len, hit_pos + hit_len + span);
+
+        CString context(buffer.substr(start, end - start).c_str());
+        if (start > 0) context.Insert(0, _T("..."));
+        if (end < total_len) context += _T("...");
+        return context;
+    }
 } // namespace
 
 // ─── 외부 함수 ───
@@ -174,6 +190,7 @@ bool SearchKeywordInDocx(const CString& file_path, const CString& keyword, CStri
     if (pos == std::wstring::npos) return false;
 
     // 문맥 추출
+    context = BuildContext(text, pos, w_key.length());
 
     return true;
 }
