@@ -8,6 +8,7 @@
 #include "DocsSearcherDlg.h"
 #include "afxdialogex.h"
 #include "EncodingUtils.h"
+#include "XmlUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -273,6 +274,8 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 		ext = ext.Right(ext.GetLength() - ext.ReverseFind('.') - 1).MakeLower();
 		const std::vector<CString> kAllowed = {  // 필터링할 확장자
 			_T("txt"),
+			_T("docx"),
+			_T("hwpx"),
 		};
 		if (std::find(kAllowed.begin(), kAllowed.end(), ext) == kAllowed.end()) continue;
 
@@ -312,9 +315,21 @@ void CDocsSearcherDlg::AddResultToList(const CString& file_name, const CString& 
 bool CDocsSearcherDlg::SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context)
 {
 	bool is_found = false;
-	if (ext == _T("txt")) {
-		// txt 파일인 경우 호출
+
+	if (ext.CompareNoCase(_T("txt")) == 0)
+	{
+		// txt
 		is_found = SearchKeywordInTXT(file_path, keyword, context);
+	}
+	else if (ext.CompareNoCase(_T("docx")) == 0) 
+	{
+		// docx
+		is_found = SearchKeywordInDocx(file_path, keyword, context);
+	}
+	else if (ext.CompareNoCase(_T("hwpx")) == 0) 
+	{
+		// hwpx
+		is_found = SearchKeywordInHwpx(file_path, keyword, context);
 	}
 	return is_found;
 }
