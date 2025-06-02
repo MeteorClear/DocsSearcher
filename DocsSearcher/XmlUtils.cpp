@@ -81,7 +81,8 @@ namespace
     // ToLower
     // -------
     // wstring 소문자 변환
-    std::wstring ToLower(const std::wstring& src) {
+    std::wstring ToLower(const std::wstring& src) 
+    {
         std::locale loc;
         std::wstring out(src.size(), L'\0');
         std::transform(src.begin(), src.end(), out.begin(), [&loc](wchar_t ch) { return std::tolower(ch, loc); });
@@ -93,7 +94,8 @@ namespace
     // BuildContext
     // ------------
     // 버퍼에서 특정 위치 주변 문맥 추출
-    CString BuildContext(const std::wstring& buffer, size_t hit_pos, size_t hit_len, size_t span = 20) {
+    CString BuildContext(const std::wstring& buffer, size_t hit_pos, size_t hit_len, size_t span = 20) 
+    {
         const size_t total_len = buffer.length();
         const size_t start = (hit_pos > span) ? hit_pos - span : 0;
         const size_t end = min(total_len, hit_pos + hit_len + span);
