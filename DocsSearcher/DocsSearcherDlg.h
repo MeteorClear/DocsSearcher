@@ -43,6 +43,7 @@ public:
 
 	// 리스트 클릭 메서드
 	afx_msg void OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult); // 리스트 컨트롤 항목 더블 클릭시 해당 파일을 여는 메서드
+	afx_msg void OnListCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);  // 리스트 컨트롤 항목을 직접 그리는 메서드
 private:
 	void SearchFolder(const CString& folder_path, const CString& target_keyword);  // 폴더 검색 메서드
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드

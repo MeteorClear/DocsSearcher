@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_FOLDER, &CDocsSearcherDlg::OnBnClickedBtnFolder)
 	ON_BN_CLICKED(IDC_BTN_KEYWORD, &CDocsSearcherDlg::OnBnClickedBtnKeyword)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RESULT, &CDocsSearcherDlg::OnNMDblclkResultList)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RESULT, &CDocsSearcherDlg::OnListCustomDraw)
 END_MESSAGE_MAP()
 
 
@@ -424,4 +425,49 @@ void CDocsSearcherDlg::OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult)
 		msg.Format(_T("파일을 열 수 없습니다:\n%s"), static_cast<LPCTSTR>(file_path));
 		AfxMessageBox(msg, MB_ICONERROR);
 	}
+}
+
+
+// ----------------------------------
+// CDocsSearcherDlg::OnListCustomDraw
+// ----------------------------------
+//
+void CDocsSearcherDlg::OnListCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	auto* cd = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+	*pResult = CDRF_DODEFAULT;					// 기본값
+
+	switch (cd->nmcd.dwDrawStage) 
+	{
+	case CDDS_PREPAINT:
+		*pResult = CDRF_NOTIFYITEMDRAW;			// ITEM 단계 요청
+		break;
+
+	case CDDS_ITEMPREPAINT:
+		*pResult = CDRF_NOTIFYSUBITEMDRAW;		// SUBITEM 단계 요청
+		break;
+
+	case CDDS_SUBITEM | CDDS_ITEMPREPAINT: 
+	{
+		int row = static_cast<int>(cd->nmcd.dwItemSpec);
+		int col = cd->iSubItem;
+
+		CString current_keyword;
+		keyword_edit_.GetWindowText(current_keyword);
+
+		// 리스트 2열만 그리기
+		if (col == 2 && !current_keyword.IsEmpty()) {
+			CDC* pDC = CDC::FromHandle(cd->nmcd.hdc);
+			CRect rc;
+			result_list_.GetSubItemRect(row, col, LVIR_LABEL, rc);
+
+			CString text = result_list_.GetItemText(row, col);
+
+			//  todo: pDC로 그리기
+
+			*pResult = CDRF_SKIPDEFAULT;		// ListCtrl 기본 그리기 스킵
+		}
+		break;
+	} // case
+	} // switch
 }
