@@ -49,4 +49,5 @@ private:
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드
 	bool SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context); // 파일 확장자별 파일 읽기 메서드 호출 메서드
 	bool SearchKeywordInTXT(const CString& file_path, CString keyword, CString& context); // txt 확장자 파일 읽고 검색하는 메서드
+	void CDocsSearcherDlg::DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword);
 };

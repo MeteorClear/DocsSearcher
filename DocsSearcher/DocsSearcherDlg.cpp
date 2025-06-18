@@ -456,18 +456,67 @@ void CDocsSearcherDlg::OnListCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 		keyword_edit_.GetWindowText(current_keyword);
 
 		// 리스트 2열만 그리기
-		if (col == 2 && !current_keyword.IsEmpty()) {
+		if (col == 2 && !current_keyword.IsEmpty()) 
+		{
 			CDC* pDC = CDC::FromHandle(cd->nmcd.hdc);
 			CRect rc;
 			result_list_.GetSubItemRect(row, col, LVIR_LABEL, rc);
 
 			CString text = result_list_.GetItemText(row, col);
 
-			//  todo: pDC로 그리기
+			DrawHighlightedText(pDC, rc, text, current_keyword);
 
 			*pResult = CDRF_SKIPDEFAULT;		// ListCtrl 기본 그리기 스킵
 		}
 		break;
 	} // case
 	} // switch
+}
+
+
+// -------------------------------------
+// CDocsSearcherDlg::DrawHighlightedText
+// -------------------------------------
+//
+void CDocsSearcherDlg::DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword)
+{
+	// 배경
+	pDC->FillSolidRect(rc, ::GetSysColor(COLOR_WINDOW));
+
+	// 대소문자 무시 검색
+	CString lower = text;     lower.MakeLower();
+	CString lower_kw = keyword; lower_kw.MakeLower();
+	int pos = lower.Find(lower_kw);
+
+	// 좌측 여백
+	int x = rc.left + 4;
+	int y = rc.top + (rc.Height() - pDC->GetTextExtent(_T("A")).cy) / 2;
+
+	if (pos == -1) 
+	{
+		// 키워드가 없으면 한 번에
+		pDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+		pDC->ExtTextOut(x, y, ETO_CLIPPED, rc, text, nullptr);
+		return;
+	}
+
+	CString left = text.Left(pos);
+	CString mid = text.Mid(pos, keyword.GetLength());
+	CString right = text.Mid(pos + keyword.GetLength());
+
+	SIZE sz{};
+
+	// 앞부분
+	pDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+	pDC->ExtTextOut(x, y, 0, nullptr, left, nullptr);
+	x += pDC->GetTextExtent(left).cx;
+
+	// 키워드(강조)
+	pDC->SetTextColor(RGB(220, 20, 60));		// 빨강
+	pDC->ExtTextOut(x, y, 0, nullptr, mid, nullptr);
+	x += pDC->GetTextExtent(mid).cx;
+
+	// 뒷부분
+	pDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+	pDC->ExtTextOut(x, y, 0, nullptr, right, nullptr);
 }
