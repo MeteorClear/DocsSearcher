@@ -50,10 +50,11 @@ public:
 	afx_msg LRESULT CDocsSearcherDlg::OnAddResult(WPARAM wParam, LPARAM lParam);  // 리스트 컨트롤에 데이터 등록
 private:
 	void SearchFolder(const CString& folder_path, const CString& target_keyword);  // 폴더 검색 메서드
+	void CollectTargetFiles(const CString& folder_path, const CString& keyword, std::vector<FileTask>& out_tasks);  // 특정 파일 경로만 필터링해 수집하는 메서드
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드
-	bool SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context); // 파일 확장자별 파일 읽기 메서드 호출 메서드
-	bool SearchKeywordInTXT(const CString& file_path, CString keyword, CString& context); // txt 확장자 파일 읽고 검색하는 메서드
-	void CDocsSearcherDlg::DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword);
+	bool SearchKeywordHandler(const CString& ext, const CString& file_path, const CString& keyword, CString& context);  // 파일 확장자별 파일 읽기 메서드 호출 메서드
+	bool SearchKeywordInTXT(const CString& file_path, CString keyword, CString& context);  // txt 확장자 파일 읽고 검색하는 메서드
+	void DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword);  // 리스트 컨트롤에서 특정 키워드를 강조하는 메서드
 };
 
 

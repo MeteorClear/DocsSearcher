@@ -246,18 +246,33 @@ void CDocsSearcherDlg::OnBnClickedBtnKeyword()
 // ------------------------------
 // CDocsSearcherDlg::SearchFolder
 // ------------------------------
-// 1) 경로의 폴더를 순차적으로 확인
-// 2) 하위 폴더인 경우 재귀적으로 탐색
-// 3) 목표 파일 확장자만 필터링
-// 4) 파일 내용에 키워드가 있는지 검사
-// 5) 결과를 리스트 컨트롤에 표시
+// 
 void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& target_keyword)
+{
+	std::vector<FileTask> file_tasks;
+	CollectTargetFiles(folder_path, target_keyword, file_tasks);
+	// 파일 필터링 후 수집
+	// 수집된 결과를 순차적으로 쓰레드로 병렬처리
+}
+
+
+// ------------------------------------
+// CDocsSearcherDlg::CollectTargetFiles
+// ------------------------------------
+// 
+void CDocsSearcherDlg::CollectTargetFiles(const CString& folder_path, const CString& keyword, std::vector<FileTask>& out_tasks)
 {
 	CFileFind finder;
 	CString search_spec = folder_path + _T("\\*.*");
 	BOOL is_working = finder.FindFile(search_spec);
 
-	while (is_working) 
+	const std::vector<CString> kAllowed = {  // 필터링할 확장자
+		_T("txt"),
+		_T("docx"),
+		_T("hwpx"),
+	};
+
+	while (is_working)
 	{
 		is_working = finder.FindNextFile();
 
@@ -267,35 +282,19 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 		// 폴더인 경우 재귀
 		if (finder.IsDirectory())
 		{
-			SearchFolder(finder.GetFilePath(), target_keyword);
+			CollectTargetFiles(finder.GetFilePath(), keyword, out_tasks);
 			continue;
 		}
-		
-		// 확장자 필터링 (txt, ... 추가)
+
+		// 확장자 필터링
 		CString ext = finder.GetFilePath();
 		ext = ext.Right(ext.GetLength() - ext.ReverseFind('.') - 1).MakeLower();
-		const std::vector<CString> kAllowed = {  // 필터링할 확장자
-			_T("txt"),
-			_T("docx"),
-			_T("hwpx"),
-		};
+		
 		if (std::find(kAllowed.begin(), kAllowed.end(), ext) == kAllowed.end()) continue;
 
-		// 파일 내용 검사 기능
-		bool is_found;
-		CString context;
-		is_found = SearchKeywordHandler(ext, finder.GetFilePath(), target_keyword, context);
-
-		if (is_found) AddResultToList(finder.GetFileName(), finder.GetFilePath(), context);
-
-		// Debug code
-		/*
-		{
-			CString testx = _T("no");
-			if (is_found) testx = _T("yes");
-			AddResultToList(finder.GetFileName(), finder.GetFilePath(), testx);
-		}
-		*/
+		// 필터링한 결과 수집
+		FileTask task = { ext, finder.GetFilePath(), keyword };
+		out_tasks.push_back(task);
 	}
 }
 
