@@ -6,6 +6,20 @@
 
 #define WM_ADD_RESULT (WM_USER + 1)
 
+// 구조체
+struct FileTask
+{
+	CString ext;
+	CString file_path;
+	CString keyword;
+};  // 스레드 파라미터로 넘기는 용도의 데이터 구조체
+struct SearchResult
+{
+	CString file_name;
+	CString file_path;
+	CString context;
+};  // 스레드에서 사용할 검색 결과 데이터 전달용 메시지 구조체
+
 // CDocsSearcherDlg 대화 상자
 class CDocsSearcherDlg : public CDialogEx
 {
@@ -57,17 +71,3 @@ private:
 	void DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword);  // 리스트 컨트롤에서 특정 키워드를 강조하는 메서드
 };
 
-
-// 구조체
-struct FileTask
-{
-	CString ext;
-	CString file_path;
-	CString keyword;
-};  // 스레드 파라미터로 넘기는 용도의 데이터 구조체
-struct SearchResult
-{
-	CString file_name;
-	CString file_path;
-	CString context;
-};  // 스레드에서 사용할 검색 결과 데이터 전달용 메시지 구조체

@@ -251,8 +251,24 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 {
 	std::vector<FileTask> file_tasks;
 	CollectTargetFiles(folder_path, target_keyword, file_tasks);
-	// 파일 필터링 후 수집
-	// 수집된 결과를 순차적으로 쓰레드로 병렬처리
+	for (const auto& task : file_tasks)
+	{
+		std::thread t([this, task]() {
+			CString context;
+			bool is_found = SearchKeywordHandler(task.ext, task.file_path, task.keyword, context);
+			if (is_found)
+			{
+				// UI 스레드에 결과 전달
+				auto result = new SearchResult{
+					::PathFindFileName(task.file_path),  // 파일명만 추출
+					task.file_path,
+					context
+				};
+				PostMessage(WM_ADD_RESULT, reinterpret_cast<WPARAM>(result), 0);
+			}
+		});
+		t.detach();
+	}
 }
 
 
