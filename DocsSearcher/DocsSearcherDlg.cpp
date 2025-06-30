@@ -74,6 +74,7 @@ BEGIN_MESSAGE_MAP(CDocsSearcherDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_KEYWORD, &CDocsSearcherDlg::OnBnClickedBtnKeyword)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RESULT, &CDocsSearcherDlg::OnNMDblclkResultList)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RESULT, &CDocsSearcherDlg::OnListCustomDraw)
+	ON_MESSAGE(WM_ADD_RESULT, &CDocsSearcherDlg::OnAddResult)
 END_MESSAGE_MAP()
 
 
@@ -288,11 +289,13 @@ void CDocsSearcherDlg::SearchFolder(const CString& folder_path, const CString& t
 		if (is_found) AddResultToList(finder.GetFileName(), finder.GetFilePath(), context);
 
 		// Debug code
+		/*
 		{
 			CString testx = _T("no");
 			if (is_found) testx = _T("yes");
 			AddResultToList(finder.GetFileName(), finder.GetFilePath(), testx);
 		}
+		*/
 	}
 }
 
@@ -363,10 +366,12 @@ bool CDocsSearcherDlg::SearchKeywordInTXT(const CString& file_path, CString targ
 
 	// 미발견
 	if (position == -1) {
-		{
+		/*
+		{  // debug code
 			CString msg = _T("미발견");
 			AfxMessageBox(lower_buf, MB_ICONINFORMATION);
 		}
+		*/
 		return false;
 	}
 
@@ -519,4 +524,16 @@ void CDocsSearcherDlg::DrawHighlightedText(CDC* pDC, const CRect& rc, const CStr
 	// 뒷부분
 	pDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
 	pDC->ExtTextOut(x, y, 0, nullptr, right, nullptr);
+}
+
+
+// -----------------------------
+// CDocsSearcherDlg::OnAddResult
+// -----------------------------
+//
+LRESULT CDocsSearcherDlg::OnAddResult(WPARAM wParam, LPARAM lParam)
+{
+	std::unique_ptr<SearchResult> result(reinterpret_cast<SearchResult*>(wParam));
+	AddResultToList(result->file_name, result->file_path, result->context);
+	return 0;
 }

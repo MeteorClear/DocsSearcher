@@ -4,6 +4,7 @@
 
 #pragma once
 
+#define WM_ADD_RESULT (WM_USER + 1)
 
 // CDocsSearcherDlg 대화 상자
 class CDocsSearcherDlg : public CDialogEx
@@ -44,6 +45,9 @@ public:
 	// 리스트 클릭 메서드
 	afx_msg void OnNMDblclkResultList(NMHDR* pNMHDR, LRESULT* pResult); // 리스트 컨트롤 항목 더블 클릭시 해당 파일을 여는 메서드
 	afx_msg void OnListCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);  // 리스트 컨트롤 항목을 직접 그리는 메서드
+
+	// 멀티 스레드용 메시지 핸들러
+	afx_msg LRESULT CDocsSearcherDlg::OnAddResult(WPARAM wParam, LPARAM lParam);  // 리스트 컨트롤에 데이터 등록
 private:
 	void SearchFolder(const CString& folder_path, const CString& target_keyword);  // 폴더 검색 메서드
 	void AddResultToList(const CString& file_name, const CString& file_path, const CString& context);  // 리스트 컨트롤에 데이터 추가 메서드
@@ -51,3 +55,18 @@ private:
 	bool SearchKeywordInTXT(const CString& file_path, CString keyword, CString& context); // txt 확장자 파일 읽고 검색하는 메서드
 	void CDocsSearcherDlg::DrawHighlightedText(CDC* pDC, const CRect& rc, const CString& text, const CString& keyword);
 };
+
+
+// 구조체
+struct FileTask
+{
+	CString ext;
+	CString file_path;
+	CString keyword;
+};  // 스레드 파라미터로 넘기는 용도의 데이터 구조체
+struct SearchResult
+{
+	CString file_name;
+	CString file_path;
+	CString context;
+};  // 스레드에서 사용할 검색 결과 데이터 전달용 메시지 구조체
